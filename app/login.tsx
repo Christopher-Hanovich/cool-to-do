@@ -23,7 +23,7 @@ interface SignInValues {
     email: string;
     password: string;
 }
-const SignIn = () => {
+const LogIn = () => {
     const router = useRouter();
     const [firebaseError, setFirebaseError] = useState<string | null>(null);
     const initialValues : SignInValues = { email: '', password: '' }
@@ -100,4 +100,4 @@ const SignIn = () => {
     );
 };
 
-export default SignIn;
+export default LogIn;
