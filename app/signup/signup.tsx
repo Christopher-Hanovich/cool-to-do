@@ -6,7 +6,7 @@ import { doc, setDoc, query, collection, where, getDocs } from 'firebase/firesto
 import { Formik } from 'formik';
 import React from 'react';
 import * as Yup from 'yup';
-import { auth, db } from './utils/firebase';
+import { auth, db } from '../utils/firebase';
 
 // Sign Up Validation Schema
 const signUpValidationSchema = Yup.object().shape({
@@ -88,7 +88,7 @@ const SignUp = () => {
       });
 
       // Redirect after successful user creation
-      router.push('/dashboard');
+      router.push('/');
     }
     catch (error: unknown) {
         if (error instanceof Error) {
