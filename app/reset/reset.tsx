@@ -1,7 +1,7 @@
-// In a client-side component (e.g., forgot-password.jsx)
+'use client';
 
 import { sendPasswordResetEmail } from "firebase/auth";
-import { auth } from "./utils/firebase"; // Your initialized firebase app instance
+import { auth } from "../utils/firebase"; // Your initialized firebase app instance
 import { useState } from "react";
 
 const ForgotPassword = () => {
