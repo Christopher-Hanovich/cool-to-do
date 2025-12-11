@@ -2,7 +2,7 @@
 
 import { useRouter } from 'next/navigation';
 import { createUserWithEmailAndPassword } from 'firebase/auth';
-import { doc, setDoc } from 'firebase/firestore';
+import { doc, setDoc, query, collection, where, getDocs } from 'firebase/firestore';
 import { Formik } from 'formik';
 import React from 'react';
 import * as Yup from 'yup';
@@ -17,35 +17,37 @@ const signUpValidationSchema = Yup.object().shape({
   email: Yup.string()
     .email('Please enter a valid email address')
     .required('Email is required'),
+  username: Yup.string()
+    .min(3, 'Username must be at least 3 characters')
+    .max(30, 'Username must be less than 30 characters')
+    .matches(/^[a-zA-Z0-9_]+$/, 'Username can only contain letters, numbers, and underscores')
+    .required('Username is required'),
   password: Yup.string()
     .min(6, 'Password must be at least 6 characters')
-    .matches(
-      /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/,
-      'Password must contain at least one uppercase letter, one lowercase letter, and one number'
-    )
+    .matches(/[0-9]/, 'Password must contain at least one number')
+    .matches(/[#?!@$%^&*-]/, 'Password must contain at least one special character')
+    .matches(/[A-Z]/, 'Password must contain at least one uppercase letter')
+    .matches(/[a-z]/, 'Password must contain at least one lowercase letter')
     .required('Password is required'),
   confirmPassword: Yup.string()
     .oneOf([Yup.ref('password')], 'Passwords must match')
     .required('Please confirm your password'),
-  phone: Yup.string()
-    .matches(/^[0-9]{10}$/, 'Phone number must be 10 digits')
-    .required('Phone number is required'),
 });
 
 interface SignUpFormValues {
   fullName: string;
   email: string;
+  username: string;
   password: string;
   confirmPassword: string;
-  phone: string;
 }
 
 const initialValues: SignUpFormValues = {
   fullName: '',
   email: '',
+  username: '',
   password: '',
   confirmPassword: '',
-  phone: '',
 };
 
 const SignUp = () => {
@@ -58,6 +60,17 @@ const SignUp = () => {
       setIsLoading(true);
       setFirebaseError(null);
 
+      // Check if username already exists
+      const usernamesRef = collection(db, 'users');
+      const q = query(usernamesRef, where('username', '==', values.username.toLowerCase()));
+      const querySnapshot = await getDocs(q);
+
+      if (!querySnapshot.empty) {
+        setFirebaseError('This username is already taken. Please choose another.');
+        setIsLoading(false);
+        return;
+      }
+
       // Create user account
       const userCredentials = await createUserWithEmailAndPassword(
         auth,
@@ -65,22 +78,17 @@ const SignUp = () => {
         values.password
       );
 
-      // Redirect immediately after successful user creation
-      router.push('/dashboard');
-    
+      // Save user details to Firestore
+      await setDoc(doc(db, 'users', userCredentials.user.uid), {
+        uid: userCredentials.user.uid,
+        fullName: values.fullName,
+        email: values.email,
+        username: values.username.toLowerCase(),
+        createdAt: new Date().toISOString(),
+      });
 
-      // Optional save user details to Firestore
-      try {
-        await setDoc(doc(db, 'users', userCredentials.user.uid), {
-          fullName: values.fullName,
-          email: values.email,
-          phone: values.phone,
-          createdAt: new Date().toISOString(),
-        });
-      }
-      catch (firestoreError) {
-        console.error('Error saving user data to Firestore:', firestoreError);
-      }
+      // Redirect after successful user creation
+      router.push('/dashboard');
     }
     catch (error: unknown) {
         if (error instanceof Error) {
@@ -170,27 +178,27 @@ const SignUp = () => {
                 )}
               </div>
 
-              {/* Phone Field */}
+              {/* Username Field */}
               <div>
-                <label htmlFor="phone" className="flex items-center gap-2 text-base font-semibold text-gray-700 mb-2">
+                <label htmlFor="username" className="flex items-center gap-2 text-base font-semibold text-gray-700 mb-2">
                   <svg className="w-5 h-5 text-blue-500" fill="currentColor" viewBox="0 0 20 20">
-                    <path d="M2 3a1 1 0 011-1h2.153a1 1 0 01.986.836l.74 4.435a1 1 0 01-.54 1.06l-1.548.773a11.037 11.037 0 006.105 6.105l.774-1.548a1 1 0 011.059-.54l4.435.74a1 1 0 01.836.986V17a1 1 0 01-1 1h-2C7.82 18 2 12.18 2 5V3z" />
+                    <path d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" />
                   </svg>
-                  Phone Number *
+                  Username *
                 </label>
                 <input
-                  id="phone"
-                  type="tel"
+                  id="username"
+                  type="text"
                   className={`w-full px-3 py-3 border rounded-lg text-base shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-                    touched.phone && errors.phone ? 'border-red-500' : 'border-gray-300'
+                    touched.username && errors.username ? 'border-red-500' : 'border-gray-300'
                   }`}
-                  placeholder="Enter your phone number"
-                  onChange={handleChange('phone')}
-                  onBlur={handleBlur('phone')}
-                  value={values.phone}
+                  placeholder="Choose a username"
+                  onChange={handleChange('username')}
+                  onBlur={handleBlur('username')}
+                  value={values.username}
                 />
-                {touched.phone && errors.phone && (
-                  <p className="text-red-500 text-sm mt-1 ml-1">{errors.phone}</p>
+                {touched.username && errors.username && (
+                  <p className="text-red-500 text-sm mt-1 ml-1">{errors.username}</p>
                 )}
               </div>
 
