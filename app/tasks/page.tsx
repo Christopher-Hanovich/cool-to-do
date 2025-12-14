@@ -7,13 +7,12 @@ import {
   onSnapshot,
   query,
   where,
-  orderBy,
   serverTimestamp,
   deleteDoc,
   doc,
   updateDoc,
 } from "firebase/firestore";
-import { onAuthStateChanged } from "firebase/auth";
+import { onAuthStateChanged, User } from "firebase/auth";
 import { db, auth } from "../utils/firebase";
 import LeftSidebar from "../components/left-side-bar";
 
@@ -21,20 +20,22 @@ interface Task {
   id: string;
   title: string;
   description: string;
-  startTime: string;
-  endTime: string;
+  startDay: string;
+  endDay: string;
+  completed: boolean;
 }
 
 export default function TasksPage() {
-  const [user, setUser] = useState<any>(null);
+  const [user, setUser] = useState<User | null>(null);
   const [tasks, setTasks] = useState<Task[]>([]);
   const [showCreate, setShowCreate] = useState(false);
   const [showManage, setShowManage] = useState(false);
 
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
-  const [startTime, setStartTime] = useState("");
-  const [endTime, setEndTime] = useState("");
+  const [startDay, setStartDay] = useState("");
+  const [endDay, setEndDay] = useState("");
+  const [completed, setCompleted] = useState(false);
 
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editTitle, setEditTitle] = useState("");
@@ -50,17 +51,15 @@ export default function TasksPage() {
   useEffect(() => {
     if (!user) return;
 
-    const q = query(
-      collection(db, "tasks"),
-      where("userId", "==", user.uid),
-      orderBy("createdAt", "desc")
-    );
+    const q = query(collection(db, "tasks"), where("userId", "==", user.uid));
 
     const unsub = onSnapshot(q, (snap) => {
-      const list: Task[] = snap.docs.map((d) => ({
-        id: d.id,
-        ...(d.data() as any),
-      }));
+      const list: Task[] = snap.docs
+        .map((d) => ({
+          id: d.id,
+          ...(d.data() as Omit<Task, "id">),
+        }))
+        .sort((a, b) => String(b.endDay ?? "").localeCompare(String(a.endDay ?? "")));
       setTasks(list);
     });
 
@@ -73,21 +72,22 @@ export default function TasksPage() {
     "GUEST";
 
   async function createTask() {
-    if (!title.trim()) return;
+    if (!title.trim() || !user) return;
 
     await addDoc(collection(db, "tasks"), {
       title,
       description,
-      startTime,
-      endTime,
+      startDay: startDay,
+      endDay: endDay,
+      completed: completed,
       userId: user.uid,
       createdAt: serverTimestamp(),
     });
 
     setTitle("");
     setDescription("");
-    setStartTime("");
-    setEndTime("");
+    setStartDay("");
+    setEndDay("");
     setShowCreate(false);
   }
 
@@ -129,13 +129,32 @@ export default function TasksPage() {
 
         <h2 className="text-center text-lg mb-6">TASKS</h2>
 
-        <ol className="text-center space-y-2 text-lg">
-          {tasks.map((t, i) => (
-            <li key={t.id}>
-              {i + 1}. {t.title}
-            </li>
-          ))}
-        </ol>
+        <div className="overflow-x-auto">
+          <table className="w-full text-left text-sm border-collapse">
+            <thead className="text-xs uppercase text-yellow-400/80">
+              <tr>
+                <th className="py-2 pr-4">Done</th>
+                <th className="py-2 pr-4">#</th>
+                <th className="py-2 pr-4">Title</th>
+                <th className="py-2 pr-4">Description</th>
+                <th className="py-2 pr-4">Due Date</th>
+              </tr>
+            </thead>
+            <tbody className="text-white/90">
+              {tasks.map((t, i) => (
+                <tr key={t.id} className="border-t border-white/10">
+                  <td className="py-2 pr-4 align-middle">
+                    <input type="checkbox" aria-label={`Mark ${t.title} done`} className="h-4 w-4" />
+                  </td>
+                  <td className="py-2 pr-4 align-middle">{i + 1}</td>
+                  <td className="py-2 pr-4">{t.title}</td>
+                  <td className="py-2 pr-4">{t.description}</td>
+                  <td className="py-2 pr-4">{t.endDay || "—"}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
 
         {/* Floating buttons */}
         <div className="fixed bottom-10 right-12 space-y-2 text-sm">
@@ -184,22 +203,22 @@ export default function TasksPage() {
               <div>
                 <label className="block mb-2">Start time</label>
                 <input
-                  type="time"
-                  title="Start Time"
+                  type="date"
+                  title="Start date"
                   className="rounded-full px-4 py-2"
-                  value={startTime}
-                  onChange={(e) => setStartTime(e.target.value)}
+                  value={startDay}
+                  onChange={(e) => setStartDay(e.target.value)}
                 />
               </div>
 
               <div>
                 <label className="block mb-2 border-2">End time</label>
                 <input
-                  type="time"
-                  title="End Time"
+                  type="date"
+                  title="Due date"
                   className="rounded-full px-4 py-2"
-                  value={endTime}
-                  onChange={(e) => setEndTime(e.target.value)}
+                  value={endDay}
+                  onChange={(e) => setEndDay(e.target.value)}
                 />
               </div>
             </div>
