@@ -49,7 +49,7 @@ export default function LogIn() {
       }
 
       await signInWithEmailAndPassword(auth, email, values.password);
-      router.replace('/profile');
+      router.replace('/tasks');
     } catch (error: unknown) {
       if (error instanceof Error) setFirebaseError(error.message);
       else setFirebaseError('Login failed.');

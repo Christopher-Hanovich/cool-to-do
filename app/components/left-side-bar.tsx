@@ -39,9 +39,6 @@ const LeftSidebar: React.FC = () => {
           <Link href="/tasks" className="flex items-center gap-2 hover:text-yellow-300">
             📝 Tasks
           </Link>
-          <Link href="/dashboard" className="flex items-center gap-2 hover:text-yellow-300">
-            📊 Dashboard
-          </Link>
           <Link href="/profile" className="flex items-center gap-2 text-yellow-400">
             👤 Profile
           </Link>
