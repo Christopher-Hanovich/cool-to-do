@@ -91,6 +91,10 @@ export default function TasksPage() {
     setShowCreate(false);
   }
 
+  async function toggleCompletion(id: string, current?: boolean) {
+    await updateDoc(doc(db, "tasks", id), { completed: !current });
+  }
+
   async function deleteTask(id: string) {
     await deleteDoc(doc(db, "tasks", id));
   }
@@ -127,7 +131,7 @@ export default function TasksPage() {
           </ul>
         </div>
 
-        <h2 className="text-center text-lg mb-6">TASKS</h2>
+        <h2 className="text-center text-lg mb-6">TASKS To Do</h2>
 
         <div className="overflow-x-auto">
           <table className="w-full text-left text-sm border-collapse">
@@ -141,15 +145,53 @@ export default function TasksPage() {
               </tr>
             </thead>
             <tbody className="text-white/90">
-              {tasks.map((t, i) => (
+              {tasks .filter(t => !t.completed).map((t, i) => (
                 <tr key={t.id} className="border-t border-white/10">
                   <td className="py-2 pr-4 align-middle">
-                    <input type="checkbox" aria-label={`Mark ${t.title} done`} className="h-4 w-4" />
+                    <input
+                      type="checkbox"
+                      aria-label={`Mark ${t.title} done`}
+                      className="h-4 w-4"
+                      checked={!!t.completed}
+                      onChange={() => toggleCompletion(t.id, t.completed)}
+                    />
                   </td>
                   <td className="py-2 pr-4 align-middle">{i + 1}</td>
                   <td className="py-2 pr-4">{t.title}</td>
                   <td className="py-2 pr-4">{t.description}</td>
                   <td className="py-2 pr-4">{t.endDay || "—"}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+
+        <h2 className="text-center text-lg mt-12 mb-6">Completed Tasks</h2>
+        <div className="overflow-x-auto">
+          <table className="w-full text-left text-sm border-collapse">
+            <thead className="text-xs uppercase text-yellow-400/80">
+              <tr>
+                <th className="py-2 pr-4">Done</th>
+                <th className="py-2 pr-4">#</th>
+                <th className="py-2 pr-4">Title</th>
+                <th className="py-2 pr-4">Description</th>
+              </tr>
+            </thead>
+            <tbody className="text-white/90">
+              {tasks .filter(t => t.completed).map((t, i) => (
+                <tr key={t.id} className="border-t border-white/10">
+                  <td className="py-2 pr-4 align-middle">
+                    <input
+                      type="checkbox"
+                      aria-label={`Mark ${t.title} done`}
+                      className="h-4 w-4"
+                      checked={!!t.completed}
+                      onChange={() => toggleCompletion(t.id, t.completed)}
+                    />
+                  </td>
+                  <td className="py-2 pr-4 align-middle">{i + 1}</td>
+                  <td className="py-2 pr-4">{t.title}</td>
+                  <td className="py-2 pr-4">{t.description}</td>
                 </tr>
               ))}
             </tbody>
@@ -181,42 +223,42 @@ export default function TasksPage() {
               CREATE NEW TASK
             </h2>
 
-            <label className="block mb-2 border-2">Title</label>
+            <label className="block mb-2">Title</label>
             <input
               type="text"
               title="Title"
-              className="w-full rounded-full px-6 py-3 mb-6"
+              className="w-full rounded-full px-6 py-3 mb-6 border-2 border-[#04143A]"
               value={title}
               onChange={(e) => setTitle(e.target.value)}
             />
 
-            <label className="block mb-2 border-2">Description</label>
+            <label className="block mb-2">Description</label>
             <input
               type="text"
               title="Description"
-              className="w-full rounded-full px-6 py-3 mb-10"
+              className="w-full rounded-full px-6 py-3 mb-10 border-2 border-[#04143A]"
               value={description}
               onChange={(e) => setDescription(e.target.value)}
             />
 
-            <div className="flex justify-between mb-12 border-2">
+            <div className="flex justify-between mb-12">
               <div>
-                <label className="block mb-2">Start time</label>
+                <label className="block mb-2">Start day</label>
                 <input
                   type="date"
                   title="Start date"
-                  className="rounded-full px-4 py-2"
+                  className="rounded-full px-4 py-2 border-2 border-[#04143A]"
                   value={startDay}
                   onChange={(e) => setStartDay(e.target.value)}
                 />
               </div>
 
               <div>
-                <label className="block mb-2 border-2">End time</label>
+                <label className="block mb-2">Due date</label>
                 <input
                   type="date"
                   title="Due date"
-                  className="rounded-full px-4 py-2"
+                  className="rounded-full px-4 py-2 border-2 border-[#04143A]"
                   value={endDay}
                   onChange={(e) => setEndDay(e.target.value)}
                 />
