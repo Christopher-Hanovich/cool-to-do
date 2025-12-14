@@ -181,7 +181,7 @@ export default function TasksPage() {
               CREATE NEW TASK
             </h2>
 
-            <label className="block mb-2 border-2">Title</label>
+            <label className="block mb-2 ">Title</label>
             <input
               type="text"
               title="Title"
@@ -190,7 +190,7 @@ export default function TasksPage() {
               onChange={(e) => setTitle(e.target.value)}
             />
 
-            <label className="block mb-2 border-2">Description</label>
+            <label className="block mb-2 ">Description</label>
             <input
               type="text"
               title="Description"
@@ -199,7 +199,7 @@ export default function TasksPage() {
               onChange={(e) => setDescription(e.target.value)}
             />
 
-            <div className="flex justify-between mb-12 border-2">
+            <div className="flex justify-between mb-12 ">
               <div>
                 <label className="block mb-2">Start time</label>
                 <input
@@ -212,7 +212,7 @@ export default function TasksPage() {
               </div>
 
               <div>
-                <label className="block mb-2 border-2">End time</label>
+                <label className="block mb-2 ">End time</label>
                 <input
                   type="date"
                   title="Due date"
