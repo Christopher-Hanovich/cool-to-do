@@ -118,37 +118,6 @@ export default function ProfilePage() {
           </div>
         </div>
       </main>
-
-      {/* ==================== RIGHT ACHIEVEMENTS PANEL ==================== */}
-      <aside className="w-64 bg-[#d00000] p-6 text-white flex flex-col">
-        <h2 className="text-lg font-bold mb-6 uppercase">Achievements</h2>
-
-        <div className="space-y-6 text-sm">
-          <div>
-            <p className="font-semibold">"Task Streak"</p>
-            <div className="w-full bg-white h-2 rounded">
-              <div className="bg-yellow-400 h-2 rounded" style={{ width: "70%" }}></div>
-            </div>
-            <p className="text-xs mt-1">Level 4 / 5</p>
-          </div>
-
-          <div>
-            <p className="font-semibold">"Goal Getter"</p>
-            <div className="w-full bg-white h-2 rounded">
-              <div className="bg-cyan-400 h-2 rounded" style={{ width: "45%" }}></div>
-            </div>
-            <p className="text-xs mt-1">Level 2 / 5</p>
-          </div>
-
-          <div>
-            <p className="font-semibold">"Productivity Master"</p>
-            <div className="w-full bg-white h-2 rounded">
-              <div className="bg-green-400 h-2 rounded" style={{ width: "80%" }}></div>
-            </div>
-            <p className="text-xs mt-1">Level 5 / 5</p>
-          </div>
-        </div>
-      </aside>
     </div>
   );
 }
