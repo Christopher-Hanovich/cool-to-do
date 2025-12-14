@@ -51,10 +51,10 @@ export default function TasksPage() {
     if (!user) return;
 
     const q = query(
-      collection(db, "tasks"),
-      where("userId", "==", user.uid),
-      orderBy("createdAt", "desc")
-    );
+    collection(db, "tasks"),
+    where("userId", "==", user.uid)
+  );
+
 
     const unsub = onSnapshot(q, (snap) => {
       const list: Task[] = snap.docs.map((d) => ({
@@ -156,8 +156,15 @@ export default function TasksPage() {
 
       {/* Create Task Overlay */}
       {showCreate && (
-        <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50">
-          <div className="bg-yellow-400 w-[900px] rounded-[40px] px-20 py-14 text-[#04143A]">
+        <div
+          className="fixed inset-0 bg-black/60 flex items-center justify-center z-50"
+          onClick={() => setShowCreate(false)}
+        >
+          <div
+            className="bg-yellow-400 w-[900px] rounded-[40px] px-20 py-14 text-[#04143A]"
+            onClick={(e) => e.stopPropagation()}
+          >
+
             <h2 className="text-center text-2xl font-semibold mb-10">
               CREATE NEW TASK
             </h2>
@@ -216,10 +223,17 @@ export default function TasksPage() {
         </div>
       )}
 
-     {/* Manages all Overlay */}
+    {/* Manages all Overlay */}
       {showManage && (
-        <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50">
-          <div className="bg-yellow-400 w-[900px] rounded-[40px] px-14 py-10 text-[#04143A] max-h-[80vh] overflow-y-auto">
+        <div
+          className="fixed inset-0 bg-black/60 flex items-center justify-center z-50"
+          onClick={() => setShowManage(false)}
+        >
+          <div
+            className="bg-yellow-400 w-[900px] rounded-[40px] px-14 py-10 text-[#04143A] max-h-[80vh] overflow-y-auto"
+            onClick={(e) => e.stopPropagation()}
+          >
+
             <h2 className="text-center text-2xl font-semibold mb-8">
               MANAGE TASKS
             </h2>
