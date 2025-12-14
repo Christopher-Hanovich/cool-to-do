@@ -41,7 +41,7 @@ export default function ProfilePage() {
     return () => unsubscribe();
   }, [router]);
 
-  // ✅ Update Firestore profile fields
+  // Update Firestore profile fields
   const handleUpdate = async () => {
     if (!uid) return;
     try {
@@ -103,14 +103,6 @@ export default function ProfilePage() {
               className="bg-[#001241] text-white w-full p-2 rounded outline-none focus:ring-2 focus:ring-cyan-400"
               placeholder="Full Name"
             />
-            <input
-              type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              className="bg-[#001241] text-white w-full p-2 rounded outline-none focus:ring-2 focus:ring-cyan-400"
-              placeholder="Email"
-            />
-
             <button
               onClick={handleUpdate}
               className="bg-yellow-400 hover:bg-yellow-500 text-black font-semibold w-full p-2 rounded"
