@@ -175,14 +175,20 @@ export default function TasksPage() {
 
       {/* Create Task Overlay */}
       {showCreate && (
-        <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50">
-          <div className="bg-yellow-400 w-[900px] rounded-[40px] px-20 py-14 text-[#04143A]">
+        <div
+          className="fixed inset-0 bg-black/60 flex items-center justify-center z-50"
+          onClick={() => setShowCreate(false)}
+        >
+          <div
+            className="bg-yellow-400 w-[900px] rounded-[40px] px-20 py-14 text-[#04143A]"
+            onClick={(e) => e.stopPropagation()}
+          >
             <h2 className="text-center text-2xl font-semibold mb-10">
               CREATE NEW TASK
             </h2>
 
-            <label className="block mb-2 border-2">Title</label>
-            <input
+            <label className="block mb-2 ">Title</label>
+            <input 
               type="text"
               title="Title"
               className="w-full rounded-full px-6 py-3 mb-6"
@@ -190,7 +196,7 @@ export default function TasksPage() {
               onChange={(e) => setTitle(e.target.value)}
             />
 
-            <label className="block mb-2 border-2">Description</label>
+            <label className="block mb-2">Description</label>
             <input
               type="text"
               title="Description"
@@ -199,7 +205,7 @@ export default function TasksPage() {
               onChange={(e) => setDescription(e.target.value)}
             />
 
-            <div className="flex justify-between mb-12 border-2">
+            <div className="flex justify-between mb-12 ">
               <div>
                 <label className="block mb-2">Start time</label>
                 <input
@@ -212,7 +218,7 @@ export default function TasksPage() {
               </div>
 
               <div>
-                <label className="block mb-2 border-2">End time</label>
+                <label className="block mb-2 ">End time</label>
                 <input
                   type="date"
                   title="Due date"
