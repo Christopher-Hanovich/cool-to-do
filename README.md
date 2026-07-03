@@ -29,17 +29,6 @@ Each user only ever sees their own tasks, enforced both in the UI and by Firesto
 This was built as a **group project** for coursework at SAIT (Southern Alberta Institute of
 Technology), developed collaboratively with two other contributors.
 
-## My Contributions
-
-While this was a team effort, my primary contributions were:
-
-- 🖥️ **Dashboard (Tasks) and Profile pages** — built the page layouts, components, and Tailwind styling
-- 🧭 **Left sidebar navigation component** — shared navigation used across the authenticated app
-- 🔥 **Firebase configuration & integration** — set up the Firebase app instance, Auth, and Firestore client, and wrote the `useAuth` hook used across pages
-- 🔒 **Found and fixed a Firestore security misconfiguration** — the project's Firestore rules had been left in open "test mode," which would have allowed unrestricted reads/writes; rewrote the rules to scope access to `request.auth.uid`
-- 🔑 **Rotated an exposed Firebase API key** — identified that a live API key had been committed to the repo, rotated it in the Firebase console, and moved configuration into environment variables
-- 📄 **Added version-controlled Firestore security rules** — introduced `firestore.rules` and `firebase.json` so security rules are reviewed and deployed through the Firebase CLI instead of edited only in the console
-
 ## Screenshots
 
 <div align="center">
@@ -111,12 +100,12 @@ rather than edited only in the Firebase console.
 ## Technical Challenges
 
 - **Firestore left in open test mode.** The default rules generated when the Firestore database was
-  created would have allowed broad read/write access. I rewrote the rules to check
+  created would have allowed broad read/write access. The rules were rewritten to check
   `request.auth.uid` against the document owner for both the `users` and `tasks` collections, and
-  committed them as `firestore.rules` so future changes are reviewable.
+  committed as `firestore.rules` so future changes are reviewable.
 - **An exposed Firebase API key.** A live API key had been hardcoded into the Firebase config file
-  and committed to the repo. I rotated the key in the Firebase console and migrated all Firebase
-  config values to `NEXT_PUBLIC_FIREBASE_*` environment variables loaded from a git-ignored
+  and committed to the repo. The key was rotated in the Firebase console, and Firebase config
+  values were migrated to `NEXT_PUBLIC_FIREBASE_*` environment variables loaded from a git-ignored
   `.env.local` file.
 - **Coordinating a shared codebase.** With three people building different pages against the same
   Firestore collections, keeping data shapes, query scoping, and listener cleanup (`onSnapshot`
@@ -130,8 +119,9 @@ rather than edited only in the Firebase console.
   credential itself is the only real fix, alongside moving future secrets into environment variables.
 - Real-time listeners (`onSnapshot`) are powerful but need careful query scoping and cleanup to
   avoid leaking data across users or leaving stale subscriptions active.
-- Working in a small team on a shared Next.js/Firebase codebase reinforced the value of clear
-  ownership over specific pages/components while still understanding the shared data layer.
+- Working as a small team on a shared Next.js/Firebase codebase reinforced the value of clear
+  ownership over specific pages and components while everyone stayed familiar with the shared
+  data layer.
 
 ## Getting Started
 
